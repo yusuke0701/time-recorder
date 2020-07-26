@@ -1,0 +1,77 @@
+version: 2.1
+
+orbs:
+  gcp-cli: circleci/gcp-cli@1.8.3
+
+executors:
+  go-executor:
+    working_directory: ~/app
+    docker:
+      - image: circleci/golang:1.13
+    resource_class: small
+  gcloud-executor:
+    working_directory: ~/app
+    docker:
+      - image: "google/cloud-sdk:latest"
+    resource_class: small
+
+jobs:
+  lint:
+    executor: go-executor
+    parameters:
+      cache_key:
+        type: string
+      cache_version:
+        type: string
+      working_dir:
+        type: string
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - << parameters.cache_key >>
+            - << parameters.cache_version >>
+      - run:
+          name: download go modules
+          command: go mod download
+          working_directory: << parameters.working_dir >>
+      - save_cache:
+          key: << parameters.cache_key >>
+          paths:
+            - /go/pkg/mod
+      - run:
+          name: Install GolangCI-Lint
+          command: curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.26.0
+      - run:
+          name: Run GolangCI-Lint
+          command: golangci-lint run --disable-all --enable=goimports --enable=golint --enable=govet --enable=errcheck --enable=staticcheck ./...
+          working_directory: << parameters.working_dir >>
+
+  deploy:
+    executor: gcloud-executor
+    parameters:
+      working_dir:
+        type: string
+    steps:
+      - checkout
+      - gcp-cli/initialize:
+          gcloud-service-key: GCLOUD_SERVICE_KEY
+          google-compute-zone: GOOGLE_COMPUTE_ZONE
+          google-project-id: GOOGLE_PROJECT_ID
+      - run:
+          name: deploy
+          command: ./scripts/deploy.sh
+          working_directory: << parameters.working_dir >>
+
+workflows:
+  server:
+    jobs:
+      - lint:
+          working_dir: server/src
+          cache_key: go-mod-{{ .Environment.CACHE_KEY }}-{{ checksum "server/src/go.mod" }}
+          cache_version: go-mod-{{ .Environment.CACHE_KEY }}
+      - deploy:
+          context: gcp
+          working_dir: server
+          requires:
+            - lint
