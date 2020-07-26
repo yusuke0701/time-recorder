@@ -3,6 +3,7 @@
     "version": "1.0",
     "description": "時間を記録するツールです",
     "permissions": [
+        "activeTab",
         "declarativeContent",
         "storage"
     ],
@@ -11,6 +12,12 @@
             "background.js"
         ],
         "persistent": false
+    },
+    "page_action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "32": "images/get_started32.png"
+        }
     },
     "manifest_version": 2
 }
