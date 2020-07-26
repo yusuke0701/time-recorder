@@ -1,0 +1,6 @@
+{
+    "name": "Time Recorder",
+    "version": "1.0",
+    "description": "時間を記録するツールです",
+    "manifest_version": 2
+}
