@@ -11,3 +11,5 @@
 * サーバー
     * Google Cloud Functions
     * Golang
+* データベース
+    * Google Cloud Datastore
