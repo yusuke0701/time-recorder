@@ -19,5 +19,6 @@
             "32": "images/get_started32.png"
         }
     },
+    "options_page": "option.html",
     "manifest_version": 2
 }
