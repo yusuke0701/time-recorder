@@ -19,7 +19,7 @@ func init() {
 func loadFromEnv() error {
 	ProjectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
 	if ProjectID == "" {
-		return errors.New("failed init. Please set GOOGLE_CLOUD_PROJECT.")
+		return errors.New("failed init. Please set GOOGLE_CLOUD_PROJECT")
 	}
 	return nil
 }

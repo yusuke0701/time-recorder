@@ -1,4 +1,4 @@
-package time_recorder
+package funcs
 
 import (
 	"fmt"
@@ -59,7 +59,7 @@ func End(w http.ResponseWriter, r *http.Request) {
 
 	record.End = time.Now().In(jst)
 
-	if rStore.Upsert(ctx, record); err != nil {
+	if err := rStore.Upsert(ctx, record); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintln(w, err.Error())
 		return
