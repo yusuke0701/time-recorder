@@ -1,4 +1,4 @@
-package functions
+package time_recorder
 
 import (
 	"fmt"
