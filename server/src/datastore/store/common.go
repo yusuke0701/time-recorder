@@ -1,4 +1,4 @@
-package time_recorder
+package store
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/datastore"
+	"github.com/yusuke0701/time-recorder/config"
 )
 
 var datastoreClient *datastore.Client
@@ -19,7 +20,7 @@ func init() {
 }
 
 func setNewDatastoreClient(ctx context.Context) (err error) {
-	datastoreClient, err = datastore.NewClient(ctx, ProjectID)
+	datastoreClient, err = datastore.NewClient(ctx, config.ProjectID)
 	if err != nil {
 		return fmt.Errorf("Failed to connect datastore: %v", err)
 	}

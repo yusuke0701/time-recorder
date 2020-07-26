@@ -1,4 +1,4 @@
-package time_recorder
+package config
 
 import (
 	"errors"
