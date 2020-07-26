@@ -13,3 +13,15 @@ changeColor.onclick = function (element) {
             { code: 'document.body.style.backgroundColor = "' + color + '";' });
     });
 };
+
+const start = document.getElementById('start');
+
+start.onclick = function(element){
+    // GCFを呼び出す
+}
+
+const end = document.getElementById('end');
+
+end.onclick = function(element){
+    // GCFを呼び出す
+}
