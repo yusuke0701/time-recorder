@@ -1,4 +1,5 @@
 # Time Recorder
+[![CircleCI](https://circleci.com/gh/yusuke0701/time-recorder.svg?style=svg)](https://circleci.com/gh/yusuke0701/time-recorder)
 
 ## 概要
 時間を記録するツールです。
