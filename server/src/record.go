@@ -65,6 +65,12 @@ func End(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	id := string(body)
 
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintln(w, "Set id in body.")
+		return
+	}
+
 	var rStore *store.Record
 
 	record, err := rStore.Get(ctx, id)
