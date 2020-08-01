@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/yusuke0701/time-recorder/datastore/models"
@@ -26,7 +25,7 @@ func Start(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, record.ID)
 }
 
@@ -40,13 +39,7 @@ func End(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-
-	id, err := strconv.ParseInt(string(body), 10, 64)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, err.Error())
-		return
-	}
+	id := string(body)
 
 	var rStore *store.Record
 
