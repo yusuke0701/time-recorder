@@ -4,9 +4,6 @@ export { doGet, doPost, doPut, doDelete, makeSearchParams };
 
 const axiosInstance = axios.create({
   baseURL: 'https://us-central1-hoge-hoge-123456789.cloudfunctions.net',
-  validateStatus: status => {
-    status > 300;
-  },
 });
 
 function doGet(url) {

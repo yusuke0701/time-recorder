@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { doGetListRecord } from '../../../service/recorde';
+import { doListRecord } from '../../../service/recorde';
 export default {
   data() {
     return { records: [] };
@@ -30,15 +30,10 @@ export default {
   },
   methods: {
     listRecord() {
-      doGetListRecord()
-        .then(() => {})
+      doListRecord()
+        .then(res => (this.records = res.data))
         .catch(error => {
-          // TODO: catch に入る理由が不明。。
-          if (error.response.status === 200) {
-            this.records = error.response.data;
-          } else {
-            alert('エラー: ' + JSON.stringify(error.response));
-          }
+          alert('エラー: ' + JSON.stringify(error.response));
         });
     },
     formatDate(date) {

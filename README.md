@@ -36,7 +36,6 @@ https://toranoana-lab.hatenablog.com/entry/2020/04/23/174421
 
 ## やることリスト
 
-- ポップアップを非表示にすると ID が消えるので、保存する場所を変更する
 - 一覧画面の CSS
 - API の URL を env にする
 - 認証認可

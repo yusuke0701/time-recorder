@@ -19,10 +19,11 @@ if [ "$1" ]; then
     )
 else
     functions=(
-        "Start"
-        "End"
+        "CreateRecord"
+        "GetRecord"
         "GetLastRecord"
         "ListRecord"
+        "UpdateRecord"
     )
 fi
 

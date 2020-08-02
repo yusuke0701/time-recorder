@@ -18,6 +18,9 @@ type Record struct{}
 func (r *Record) Get(ctx context.Context, id string) (*models.Record, error) {
 	record := new(models.Record)
 	if err := datastoreClient.Get(ctx, r.newKey(id), record); err != nil {
+		if err == datastore.ErrNoSuchEntity {
+			return nil, err
+		}
 		return nil, fmt.Errorf("failed to get a record: %s", err)
 	}
 
@@ -31,17 +34,18 @@ func (r *Record) GetLastRecord(ctx context.Context) (*models.Record, error) {
 	q = q.Filter("End <", myTime.InJST(time.Date(2014, time.December, 31, 12, 13, 24, 0, time.UTC)))
 
 	var records []*models.Record
-	if _, err := datastoreClient.GetAll(ctx, q, &records); err != nil {
+	keys, err := datastoreClient.GetAll(ctx, q, &records)
+	if err != nil {
 		return nil, fmt.Errorf("failed to list record: %s", err)
 	}
-
 	if len(records) == 0 {
 		return nil, datastore.ErrNoSuchEntity
 	}
-
 	if len(records) > 1 {
 		return nil, errors.New("TODO: 管理者対応")
 	}
+
+	r.setID(keys, records)
 
 	return records[0], nil
 }
@@ -50,9 +54,15 @@ func (r *Record) List(ctx context.Context) (records []*models.Record, err error)
 	q := datastore.NewQuery(r.kind())
 	q = q.Order("Start")
 
-	if _, err := datastoreClient.GetAll(ctx, q, &records); err != nil {
+	keys, err := datastoreClient.GetAll(ctx, q, &records)
+	if err != nil {
 		return nil, fmt.Errorf("failed to list record: %s", err)
 	}
+	if len(records) == 0 {
+		return nil, datastore.ErrNoSuchEntity
+	}
+
+	r.setID(keys, records)
 
 	return records, nil
 }
@@ -85,4 +95,10 @@ func (*Record) newID() (string, error) {
 
 func (r *Record) newKey(id string) *datastore.Key {
 	return datastore.NameKey(r.kind(), id, nil)
+}
+
+func (*Record) setID(keys []*datastore.Key, records []*models.Record) {
+	for i := range keys {
+		records[i].ID = keys[i].Name
+	}
 }

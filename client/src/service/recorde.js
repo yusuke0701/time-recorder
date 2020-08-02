@@ -1,14 +1,22 @@
 import { doGet, doPost } from './apiBase';
-export { doPostStart, doPostEnd, doGetListRecord };
+export { doCreateRecord, doGetRecord, doGetLastRecord, doListRecord, doUpdateRecord };
 
-function doPostStart() {
-  return doPost(`/Start`);
+function doCreateRecord() {
+  return doPost(`/CreateRecord`);
 }
 
-function doPostEnd(payload) {
-  return doPost(`/End`, payload);
+function doGetRecord() {
+  return doGet(`/GetRecord`);
 }
 
-function doGetListRecord() {
+function doGetLastRecord() {
+  return doGet(`/GetLastRecord`);
+}
+
+function doListRecord() {
   return doGet(`/ListRecord`);
+}
+
+function doUpdateRecord(payload) {
+  return doPost(`/UpdateRecord`, payload);
 }

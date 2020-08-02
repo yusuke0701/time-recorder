@@ -13,38 +13,38 @@
 </template>
 
 <script>
-import { doPostStart, doPostEnd } from '../../../service/recorde';
+import { doCreateRecord, doGetLastRecord, doUpdateRecord } from '../../../service/recorde';
 export default {
   data() {
     return { startID: '' };
   },
+  beforeMount() {
+    this.getLastRecord();
+  },
   methods: {
     start() {
-      doPostStart()
-        .then(res => {
-          this.startID = res;
-        })
+      doCreateRecord()
+        .then(res => (this.startID = res.data))
         .catch(error => {
-          // TODO: catch に入る理由が不明。。
-          if (error.response.status === 200) {
-            this.startID = error.response.data;
+          alert('エラー: ' + JSON.stringify(error.response));
+        });
+    },
+    getLastRecord() {
+      doGetLastRecord()
+        .then(res => (this.startID = res.data))
+        .catch(error => {
+          if (error.response.status === 404) {
+            // nop
           } else {
             alert('エラー: ' + JSON.stringify(error.response));
           }
         });
     },
     end() {
-      doPostEnd(this.startID)
-        .then(() => {
-          this.startID = '';
-        })
+      doUpdateRecord(this.startID)
+        .then(() => (this.startID = ''))
         .catch(error => {
-          // TODO: catch に入る理由が不明。。
-          if (error.response.status === 200) {
-            this.startID = '';
-          } else {
-            alert('エラー: ' + JSON.stringify(error.response));
-          }
+          alert('エラー: ' + JSON.stringify(error.response));
         });
     },
   },
