@@ -21,6 +21,7 @@ else
     functions=(
         "Start"
         "End"
+        "GetLastRecord"
         "ListRecord"
     )
 fi

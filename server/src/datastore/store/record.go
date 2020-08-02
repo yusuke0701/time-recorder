@@ -2,18 +2,21 @@ package store
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"time"
 
 	"cloud.google.com/go/datastore"
 
 	"github.com/yusuke0701/goutils/manufacture"
 	"github.com/yusuke0701/time-recorder/datastore/models"
+	myTime "github.com/yusuke0701/time-recorder/time"
 )
 
 type Record struct{}
 
-func (r *Record) Get(ctx context.Context, id string) (record *models.Record, err error) {
-	record = new(models.Record)
+func (r *Record) Get(ctx context.Context, id string) (*models.Record, error) {
+	record := new(models.Record)
 	if err := datastoreClient.Get(ctx, r.newKey(id), record); err != nil {
 		return nil, fmt.Errorf("failed to get a record: %s", err)
 	}
@@ -23,8 +26,29 @@ func (r *Record) Get(ctx context.Context, id string) (record *models.Record, err
 	return record, nil
 }
 
+func (r *Record) GetLastRecord(ctx context.Context) (*models.Record, error) {
+	q := datastore.NewQuery(r.kind())
+	q = q.Filter("End <", myTime.InJST(time.Date(2014, time.December, 31, 12, 13, 24, 0, time.UTC)))
+
+	var records []*models.Record
+	if _, err := datastoreClient.GetAll(ctx, q, &records); err != nil {
+		return nil, fmt.Errorf("failed to list record: %s", err)
+	}
+
+	if len(records) == 0 {
+		return nil, datastore.ErrNoSuchEntity
+	}
+
+	if len(records) > 1 {
+		return nil, errors.New("TODO: 管理者対応")
+	}
+
+	return records[0], nil
+}
+
 func (r *Record) List(ctx context.Context) (records []*models.Record, err error) {
 	q := datastore.NewQuery(r.kind())
+	q = q.Order("Start")
 
 	if _, err := datastoreClient.GetAll(ctx, q, &records); err != nil {
 		return nil, fmt.Errorf("failed to list record: %s", err)
