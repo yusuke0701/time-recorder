@@ -37,7 +37,7 @@ https://toranoana-lab.hatenablog.com/entry/2020/04/23/174421
 ## やることリスト
 
 - ポップアップを非表示にすると ID が消えるので、保存する場所を変更する
-- 日付が分かりにくい
+- 一覧画面の CSS
 - API の URL を env にする
 - 認証認可
   - https://cloud.google.com/functions/docs/securing/authenticating?hl=ja#google_sign-in

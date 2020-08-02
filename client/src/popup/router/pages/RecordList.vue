@@ -1,7 +1,7 @@
 <template>
   <div>
     <ul>
-      <li v-for="record in records" :key="record.start">start: {{ record.start }}, end: {{ record.end }}</li>
+      <li v-for="record in dateFormatedRecords" :key="record.start">start: {{ record.start }} end: {{ record.end }}</li>
     </ul>
     <router-link to="/">戻る</router-link>
   </div>
@@ -11,7 +11,19 @@
 import { doGetListRecord } from '../../../service/recorde';
 export default {
   data() {
-    return { records: '' };
+    return { records: [] };
+  },
+  computed: {
+    dateFormatedRecords() {
+      if (!this.records.length) {
+        return this.records;
+      }
+      return this.records.map((value, index, array) => {
+        value.start = this.formatDate(new Date(value.start));
+        value.end = this.formatDate(new Date(value.end));
+        return value;
+      });
+    },
   },
   beforeMount() {
     this.listRecord();
@@ -28,6 +40,22 @@ export default {
             alert('エラー: ' + JSON.stringify(error.response));
           }
         });
+    },
+    formatDate(date) {
+      return (
+        date.getFullYear() +
+        '/' +
+        ('0' + (date.getMonth() + 1)).slice(-2) +
+        '/' +
+        ('0' + date.getDate()).slice(-2) +
+        ' ' +
+        ('0' + date.getHours()).slice(-2) +
+        ':' +
+        ('0' + date.getMinutes()).slice(-2) +
+        ':' +
+        ('0' + date.getSeconds()).slice(-2) +
+        '(JST)'
+      );
     },
   },
 };
