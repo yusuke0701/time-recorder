@@ -1,6 +1,7 @@
 version: 2.1
 
 orbs:
+  node: circleci/node@1.1.6
   gcp-cli: circleci/gcp-cli@1.8.3
 
 executors:
@@ -9,6 +10,11 @@ executors:
     docker:
       - image: circleci/golang:1.13
     resource_class: small
+  node-executor:
+    working_directory: ~/app
+    docker:
+      - image: circleci/node:10.16.3
+    resource_class: small
   gcloud-executor:
     working_directory: ~/app
     docker:
@@ -16,7 +22,33 @@ executors:
     resource_class: small
 
 jobs:
-  lint:
+  lint-client:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/with-cache:
+          cache-key: "client/package-lock.json"
+          cache-version: "{{ .Environment.CACHE_KEY }}"
+          dir: "~/.npm"
+          steps:
+            - run:
+                working_directory: client
+                command: npm ci
+          use-strict-cache: false
+      - run:
+          name: lint
+          command: npm run lint
+          working_directory: client
+      - run:
+          name: prettier
+          command: npm run prettier
+          working_directory: client
+      - run:
+          name: build
+          command: npm run build
+          working_directory: client
+
+  lint-server:
     executor: go-executor
     parameters:
       cache_key:
@@ -66,7 +98,8 @@ jobs:
 workflows:
   server:
     jobs:
-      - lint:
+      - lint-client
+      - lint-server:
           working_dir: server/src
           cache_key: go-mod-{{ .Environment.CACHE_KEY }}-{{ checksum "server/src/go.mod" }}
           cache_version: go-mod-{{ .Environment.CACHE_KEY }}
@@ -74,4 +107,5 @@ workflows:
           context: gcp
           working_dir: server
           requires:
-            - lint
+            - lint-client
+            - lint-server
