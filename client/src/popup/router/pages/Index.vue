@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="startID === null"></div>
-    <div v-else-if="type === ''">
+    <div v-else-if="startID === ''">
       <button @click="start">Start</button>
     </div>
     <div v-else>
