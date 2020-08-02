@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div v-if="startID === ''">
+    <div v-if="startID === null"></div>
+    <div v-else-if="type === ''">
       <button @click="start">Start</button>
     </div>
     <div v-else>
@@ -16,7 +17,7 @@
 import { doCreateRecord, doGetLastRecord, doUpdateRecord } from '../../../service/recorde';
 export default {
   data() {
-    return { startID: '' };
+    return { startID: null };
   },
   beforeMount() {
     this.getLastRecord();
@@ -34,7 +35,7 @@ export default {
         .then(res => (this.startID = res.data))
         .catch(error => {
           if (error.response.status === 404) {
-            // nop
+            this.startID = '';
           } else {
             alert('エラー: ' + JSON.stringify(error.response));
           }
