@@ -6,6 +6,9 @@
     <div v-else>
       <button @click="end">End</button>
     </div>
+    <div>
+      <router-link to="/list">一覧へ</router-link>
+    </div>
   </div>
 </template>
 

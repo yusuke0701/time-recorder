@@ -1,5 +1,5 @@
-import { doPost } from './apiBase';
-export { doPostStart, doPostEnd };
+import { doGet, doPost } from './apiBase';
+export { doPostStart, doPostEnd, doGetListRecord };
 
 function doPostStart() {
   return doPost(`/Start`);
@@ -7,4 +7,8 @@ function doPostStart() {
 
 function doPostEnd(payload) {
   return doPost(`/End`, payload);
+}
+
+function doGetListRecord() {
+  return doGet(`/ListRecord`);
 }
