@@ -38,5 +38,3 @@ https://toranoana-lab.hatenablog.com/entry/2020/04/23/174421
 
 - 一覧画面の CSS
 - API の URL を env にする
-- 認証認可
-  - https://cloud.google.com/functions/docs/securing/authenticating?hl=ja#google_sign-in
