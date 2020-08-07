@@ -1,0 +1,10 @@
+indexes:
+  - kind: record
+    properties:
+      - name: GoogleID
+      - name: Start
+
+  - kind: record
+    properties:
+      - name: GoogleID
+      - name: End

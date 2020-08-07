@@ -20,12 +20,13 @@ if [ "$1" ]; then
 else
     functions=(
         "CreateRecord"
-        "GetRecord"
         "GetLastRecord"
         "ListRecord"
         "UpdateRecord"
     )
 fi
+
+gcloud datastore indexes create index.yaml --project=$projectID --quiet
 
 cd ../src
 

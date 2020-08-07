@@ -1,6 +1,7 @@
 {
   "name": "time-recorder",
   "description": "A Vue.js web extension",
+  "permissions": ["identity", "storage"],
   "version": null,
   "manifest_version": 2,
   "icons": {
@@ -12,12 +13,14 @@
     "default_popup": "popup/popup.html"
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ]
+    "scripts": ["background.js"]
   },
   "options_ui": {
     "page": "options/options.html",
     "chrome_style": true
+  },
+  "oauth2": {
+    "client_id": "725316375063-e7uutkpuqq945tqdk3jfob2le4mrbjdp.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/userinfo.email"]
   }
 }

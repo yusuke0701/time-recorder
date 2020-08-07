@@ -121,8 +121,8 @@ github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
-github.com/yusuke0701/goutils v0.0.0-20200620191415-57a66f894d69 h1:+5+dV4ynU/ifNrrCa/8baGsKCk/zSayYGd/nTjeKoeM=
-github.com/yusuke0701/goutils v0.0.0-20200620191415-57a66f894d69/go.mod h1:0ZJ7aTioR7doQ9D5MhHKeMd9gmPXFppCxG4gbF9x4pA=
+github.com/yusuke0701/goutils v0.0.0-20200807192733-58dab84025c8 h1:QbllRmOX0V1YhBPJvIkvM66d8inAVA3KdgChL64Fi2g=
+github.com/yusuke0701/goutils v0.0.0-20200807192733-58dab84025c8/go.mod h1:0ZJ7aTioR7doQ9D5MhHKeMd9gmPXFppCxG4gbF9x4pA=
 go.opencensus.io v0.21.0/go.mod h1:mSImk1erAIZhrmZN+AvHh14ztQfjbGwt4TtuofqLduU=
 go.opencensus.io v0.22.0/go.mod h1:+kGneAE2xo2IficOXnaByMWTGM9T73dGwxeWcUqIpI8=
 go.opencensus.io v0.22.2/go.mod h1:yxeiOL68Rb0Xd1ddK5vPZ/oVn4vY4Ynel7k9FzqtOIw=
