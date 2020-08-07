@@ -22,6 +22,7 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 		setHeaderForCORS(w)
 		return
 	}
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// main process
@@ -49,6 +50,7 @@ func GetRecord(w http.ResponseWriter, r *http.Request) {
 		setHeaderForCORS(w)
 		return
 	}
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -92,6 +94,7 @@ func GetLastRecord(w http.ResponseWriter, r *http.Request) {
 		setHeaderForCORS(w)
 		return
 	}
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// main process
@@ -120,6 +123,7 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 		setHeaderForCORS(w)
 		return
 	}
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// main process
@@ -152,6 +156,7 @@ func UpdateRecord(w http.ResponseWriter, r *http.Request) {
 		setHeaderForCORS(w)
 		return
 	}
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	body, err := ioutil.ReadAll(r.Body)
