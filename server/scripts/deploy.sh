@@ -20,7 +20,6 @@ if [ "$1" ]; then
 else
     functions=(
         "CreateRecord"
-        "GetRecord"
         "GetLastRecord"
         "ListRecord"
         "UpdateRecord"

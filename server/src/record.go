@@ -40,50 +40,6 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, record.ID)
 }
 
-func GetRecord(w http.ResponseWriter, r *http.Request) {
-	// pre process
-
-	ctx := r.Context()
-
-	// Set CORS headers for the preflight request
-	if r.Method == http.MethodOptions {
-		setHeaderForCORS(w)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, err.Error())
-		return
-	}
-	defer r.Body.Close()
-	id := string(body)
-
-	if id == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, "Set id in body.")
-		return
-	}
-
-	// main process
-
-	record, err := (&store.Record{}).Get(ctx, id)
-	if err == datastore.ErrNoSuchEntity {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	} else if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err.Error())
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, record.ID)
-}
-
 func GetLastRecord(w http.ResponseWriter, r *http.Request) {
 	// pre process
 
