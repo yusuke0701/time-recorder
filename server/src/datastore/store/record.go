@@ -29,8 +29,9 @@ func (r *Record) Get(ctx context.Context, id string) (*models.Record, error) {
 	return record, nil
 }
 
-func (r *Record) GetLastRecord(ctx context.Context) (*models.Record, error) {
+func (r *Record) GetLastRecord(ctx context.Context, googleID string) (*models.Record, error) {
 	q := datastore.NewQuery(r.kind())
+	q = q.Filter("GoogleID =", googleID)
 	q = q.Filter("End <", myTime.InJST(time.Date(2014, time.December, 31, 12, 13, 24, 0, time.UTC)))
 
 	var records []*models.Record
@@ -50,8 +51,9 @@ func (r *Record) GetLastRecord(ctx context.Context) (*models.Record, error) {
 	return records[0], nil
 }
 
-func (r *Record) List(ctx context.Context) (records []*models.Record, err error) {
+func (r *Record) List(ctx context.Context, googleID string) (records []*models.Record, err error) {
 	q := datastore.NewQuery(r.kind())
+	q = q.Filter("GoogleID =", googleID)
 	q = q.Order("Start")
 
 	keys, err := datastoreClient.GetAll(ctx, q, &records)
