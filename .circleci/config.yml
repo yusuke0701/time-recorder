@@ -109,3 +109,6 @@ workflows:
           requires:
             - lint-client
             - lint-server
+          filters:
+            branches:
+              only: master

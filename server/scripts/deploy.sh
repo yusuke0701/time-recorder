@@ -26,6 +26,8 @@ else
     )
 fi
 
+gcloud datastore indexes create index.yaml --project=$projectID --quiet
+
 cd ../src
 
 for func in "${functions[@]}"; do
