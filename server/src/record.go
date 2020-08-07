@@ -5,12 +5,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"cloud.google.com/go/datastore"
+
+	"github.com/yusuke0701/goutils/googleapi"
 	"github.com/yusuke0701/time-recorder/datastore/models"
 	"github.com/yusuke0701/time-recorder/datastore/store"
 	"github.com/yusuke0701/time-recorder/time"
 )
+
+var defaultHTTPClient = http.DefaultClient
 
 func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	// pre process
@@ -25,10 +30,19 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
+	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	res, err := googleapi.CallUserInfoMeAPI(defaultHTTPClient, token)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+
 	// main process
 
 	record := &models.Record{
-		Start: time.NowInJST(),
+		GoogleID: res.ID,
+		Start:    time.NowInJST(),
 	}
 	if err := (&store.Record{}).Upsert(ctx, record); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -53,9 +67,17 @@ func GetLastRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
+	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	res, err := googleapi.CallUserInfoMeAPI(defaultHTTPClient, token)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+
 	// main process
 
-	record, err := (&store.Record{}).GetLastRecord(ctx)
+	record, err := (&store.Record{}).GetLastRecord(ctx, res.ID)
 	if err == datastore.ErrNoSuchEntity {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -82,9 +104,17 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
+	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	res, err := googleapi.CallUserInfoMeAPI(defaultHTTPClient, token)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+
 	// main process
 
-	records, err := (&store.Record{}).List(ctx)
+	records, err := (&store.Record{}).List(ctx, res.ID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -130,6 +160,14 @@ func UpdateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	res, err := googleapi.CallUserInfoMeAPI(defaultHTTPClient, token)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+
 	// main process
 
 	var rStore *store.Record
@@ -141,6 +179,11 @@ func UpdateRecord(w http.ResponseWriter, r *http.Request) {
 	} else if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
+		return
+	}
+
+	if record.GoogleID != res.ID {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
