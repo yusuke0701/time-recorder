@@ -33,8 +33,3 @@ npm run build:dev
 詳細な手順は以下のサイトが参考になる。
 
 https://toranoana-lab.hatenablog.com/entry/2020/04/23/174421
-
-## やることリスト
-
-- 一覧画面の CSS
-- API の URL を env にする
