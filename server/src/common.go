@@ -7,8 +7,6 @@ import (
 	"github.com/yusuke0701/goutils/googleapi/userinfo"
 )
 
-var defaultHTTPClient = http.DefaultClient
-
 func setHeaderForCORS(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -18,12 +16,13 @@ func setHeaderForCORS(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func getGoogleID(token string) (string, error) {
-	var h userinfo.Helper
+var userinfoHelper userinfo.Helper
+
+func init() {
 	if gcp.OnGCP() {
-		h = userinfo.NewHelper(defaultHTTPClient, true, 100)
+		userinfoHelper = userinfo.NewHelper(http.DefaultClient, true, 100)
 	} else {
-		h = userinfo.NewMockHelper()
+		userinfoHelper = userinfo.NewMockHelper()
 		userinfo.CallUserInfoMeAPIMockData = &userinfo.CallUserInfoMeAPIRes{
 			ID:            "sampleID",
 			Email:         "sample@example.com",
@@ -31,7 +30,10 @@ func getGoogleID(token string) (string, error) {
 			Picture:       "samplePicture",
 		}
 	}
-	res, err := h.CallUserInfoMeAPI(token)
+}
+
+func getGoogleID(token string) (string, error) {
+	res, err := userinfoHelper.CallUserInfoMeAPI(token)
 	if err != nil {
 		return "", err
 	}
