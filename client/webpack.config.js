@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const ejs = require('ejs');
+const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const ExtensionReloader = require('webpack-extension-reloader');
@@ -10,7 +11,7 @@ const config = {
   mode: process.env.NODE_ENV,
   context: __dirname + '/src',
   entry: {
-    'background': './background.js',
+    background: './background.js',
     'popup/popup': './popup/popup.js',
     'options/options': './options/options.js',
   },
@@ -19,6 +20,9 @@ const config = {
     filename: '[name].js',
   },
   resolve: {
+    alias: {
+      env$: path.resolve(__dirname, `.env/${process.env.NODE_ENV}.js`),
+    },
     extensions: ['.js', '.vue'],
   },
   module: {
@@ -81,7 +85,7 @@ const config = {
       {
         from: 'manifest.json',
         to: 'manifest.json',
-        transform: (content) => {
+        transform: content => {
           const jsonContent = JSON.parse(content);
           jsonContent.version = version;
 

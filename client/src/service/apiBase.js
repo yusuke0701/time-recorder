@@ -1,9 +1,10 @@
 import axios from 'axios';
+import env from 'env';
 
 export { doGet, doPost, doPut, doDelete, refreshAuthToken };
 
 const axiosInstance = axios.create({
-  baseURL: 'https://us-central1-hoge-hoge-123456789.cloudfunctions.net',
+  baseURL: env.apiBaseURL,
 });
 
 function getAuthToken() {
