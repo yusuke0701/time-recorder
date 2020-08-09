@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { refreshAuthToken } from '../../../service/apiBase';
 import { doCreateRecord, doGetLastRecord, doUpdateRecord } from '../../../service/recorde';
 export default {
   data() {
@@ -27,14 +28,24 @@ export default {
       doCreateRecord()
         .then(res => (this.startID = res.data))
         .catch(error => {
-          alert('エラー: ' + JSON.stringify(error.response));
+          if (error.response.status === 401) {
+            refreshAuthToken().then(() => {
+              this.start();
+            });
+          } else {
+            alert('エラー: ' + JSON.stringify(error.response));
+          }
         });
     },
     getLastRecord() {
       doGetLastRecord()
         .then(res => (this.startID = res.data))
         .catch(error => {
-          if (error.response.status === 404) {
+          if (error.response.status === 401) {
+            refreshAuthToken().then(() => {
+              this.getLastRecord();
+            });
+          } else if (error.response.status === 404) {
             this.startID = '';
           } else {
             alert('エラー: ' + JSON.stringify(error.response));
@@ -45,7 +56,13 @@ export default {
       doUpdateRecord(this.startID)
         .then(() => (this.startID = ''))
         .catch(error => {
-          alert('エラー: ' + JSON.stringify(error.response));
+          if (error.response.status === 401) {
+            refreshAuthToken().then(() => {
+              this.end();
+            });
+          } else {
+            alert('エラー: ' + JSON.stringify(error.response));
+          }
         });
     },
   },
