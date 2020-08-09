@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { refreshAuthToken } from '../../../service/apiBase';
 import { doListRecord } from '../../../service/recorde';
 export default {
   data() {
@@ -33,7 +34,13 @@ export default {
       doListRecord()
         .then(res => (this.records = res.data))
         .catch(error => {
-          alert('エラー: ' + JSON.stringify(error.response));
+          if (error.response.status === 401) {
+            refreshAuthToken().then(() => {
+              this.listRecord();
+            });
+          } else {
+            alert('エラー: ' + JSON.stringify(error.response));
+          }
         });
     },
     formatDate(date) {
