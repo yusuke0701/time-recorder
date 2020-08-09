@@ -96,7 +96,7 @@ jobs:
           working_directory: << parameters.working_dir >>
 
 workflows:
-  server:
+  build:
     jobs:
       - lint-client
       - lint-server:
