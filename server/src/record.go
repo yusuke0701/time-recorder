@@ -28,7 +28,7 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := getGoogleID(token)
+	googleID, err := callGetGoogleIDFunction(ctx, token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -65,7 +65,7 @@ func GetLastRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := getGoogleID(token)
+	googleID, err := callGetGoogleIDFunction(ctx, token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -102,7 +102,7 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := getGoogleID(token)
+	googleID, err := callGetGoogleIDFunction(ctx, token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -158,7 +158,7 @@ func UpdateRecord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := getGoogleID(token)
+	googleID, err := callGetGoogleIDFunction(ctx, token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
