@@ -19,16 +19,27 @@
 
 ## 動作確認方法
 
+1. サーバー側のデプロイ
 ```
 ./server/scripts/deploy.sh <your_project_id>
+```
+
+2. クライアント側の環境変数の修正
+```
+export default {
+  apiBaseURL: 'your_cloudfunctions_base_url',
+};
+```
+
+3. クライアント側のビルド
+```
 cd client
 npm install
 npm run build:dev
 ```
+上記手順で client/dist フォルダができる。
 
-上記手順でサーバー側のデプロイと client/dist フォルダができる。
-
-ブラウザで `chrome://extentions` を開き、dist フォルダを読み込ませる。
+4. ブラウザで `chrome://extentions` を開き、client/dist フォルダを読み込ませる。
 
 詳細な手順は以下のサイトが参考になる。
 
