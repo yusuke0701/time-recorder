@@ -9,13 +9,10 @@ import (
 
 	"cloud.google.com/go/datastore"
 
-	"github.com/yusuke0701/goutils/googleapi"
 	"github.com/yusuke0701/time-recorder/datastore/models"
 	"github.com/yusuke0701/time-recorder/datastore/store"
 	"github.com/yusuke0701/time-recorder/time"
 )
-
-var defaultHTTPClient = http.DefaultClient
 
 func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	// pre process
@@ -31,7 +28,7 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	res, err := googleapi.CallUserInfoMeAPI(defaultHTTPClient, token)
+	googleID, err := getGoogleID(token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -41,7 +38,7 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	// main process
 
 	record := &models.Record{
-		GoogleID: res.ID,
+		GoogleID: googleID,
 		Start:    time.NowInJST(),
 	}
 	if err := (&store.Record{}).Upsert(ctx, record); err != nil {
@@ -68,7 +65,7 @@ func GetLastRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	res, err := googleapi.CallUserInfoMeAPI(defaultHTTPClient, token)
+	googleID, err := getGoogleID(token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -77,7 +74,7 @@ func GetLastRecord(w http.ResponseWriter, r *http.Request) {
 
 	// main process
 
-	record, err := (&store.Record{}).GetLastRecord(ctx, res.ID)
+	record, err := (&store.Record{}).GetLastRecord(ctx, googleID)
 	if err == datastore.ErrNoSuchEntity {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -105,7 +102,7 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	res, err := googleapi.CallUserInfoMeAPI(defaultHTTPClient, token)
+	googleID, err := getGoogleID(token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -114,7 +111,7 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 
 	// main process
 
-	records, err := (&store.Record{}).List(ctx, res.ID)
+	records, err := (&store.Record{}).List(ctx, googleID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -161,7 +158,7 @@ func UpdateRecord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	res, err := googleapi.CallUserInfoMeAPI(defaultHTTPClient, token)
+	googleID, err := getGoogleID(token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -182,7 +179,7 @@ func UpdateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if record.GoogleID != res.ID {
+	if record.GoogleID != googleID {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
