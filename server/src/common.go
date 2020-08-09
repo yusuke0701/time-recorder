@@ -21,7 +21,7 @@ func setHeaderForCORS(w http.ResponseWriter) {
 func getGoogleID(token string) (string, error) {
 	var h userinfo.Helper
 	if gcp.OnGCP() {
-		h = userinfo.NewHelper(defaultHTTPClient, true)
+		h = userinfo.NewHelper(defaultHTTPClient, true, 100)
 	} else {
 		h = userinfo.NewMockHelper()
 		userinfo.CallUserInfoMeAPIMockData = &userinfo.CallUserInfoMeAPIRes{
