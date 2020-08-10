@@ -2,13 +2,13 @@
   <div>
     <div v-if="startID === null"></div>
     <div v-else-if="startID === ''">
-      <button @click="start">Start</button>
+      <b-button @click="start">Start</b-button>
     </div>
     <div v-else>
-      <button @click="end">End</button>
+      <b-button @click="end">End</b-button>
     </div>
-    <div>
-      <router-link to="/list">一覧へ</router-link>
+    <div class="text-nowrap">
+      <b-link to="/list">一覧へ</b-link>
     </div>
   </div>
 </template>
@@ -69,8 +69,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-p {
-  font-size: 20px;
-}
-</style>
+<style lang="scss" scoped></style>
