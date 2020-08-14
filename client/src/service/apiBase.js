@@ -1,7 +1,7 @@
 import axios from 'axios';
 import env from 'env';
 
-export { doGet, doPost, doPut, doDelete, refreshAuthToken };
+export { doGet, doPost, doPut, doDelete, refreshAuthToken, makeSearchParams };
 
 const axiosInstance = axios.create({
   baseURL: env.apiBaseURL,
@@ -63,4 +63,20 @@ function doDelete(url) {
       },
     });
   });
+}
+
+function makeSearchParams(reqObj) {
+  const searchParams = new URLSearchParams('');
+  if (!reqObj) {
+    return searchParams;
+  }
+  Object.keys(reqObj).forEach(key => {
+    const property = reqObj[key];
+    if (property === null || property === undefined) {
+      return;
+    }
+
+    searchParams.set(key, property);
+  });
+  return `?${searchParams}`;
 }
