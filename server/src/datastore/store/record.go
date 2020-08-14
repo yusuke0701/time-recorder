@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"cloud.google.com/go/datastore"
 
 	"github.com/yusuke0701/goutils/manufacture"
 	"github.com/yusuke0701/time-recorder/datastore/models"
-	myTime "github.com/yusuke0701/time-recorder/time"
+	timeutils "github.com/yusuke0701/time-recorder/time"
 )
 
 type Record struct{}
@@ -25,14 +24,15 @@ func (r *Record) Get(ctx context.Context, id string) (*models.Record, error) {
 	}
 
 	record.ID = id
-
+	record.StartDetail = timeutils.InJST(record.StartDetail)
+	record.EndDetail = timeutils.InJST(record.EndDetail)
 	return record, nil
 }
 
 func (r *Record) GetLastRecord(ctx context.Context, googleID string) (*models.Record, error) {
 	q := datastore.NewQuery(r.kind())
 	q = q.Filter("GoogleID =", googleID)
-	q = q.Filter("End <", myTime.InJST(time.Date(2014, time.December, 31, 12, 13, 24, 0, time.UTC)))
+	q = q.Filter("End =", "0001-01-1")
 
 	var records []*models.Record
 	keys, err := datastoreClient.GetAll(ctx, q, &records)
@@ -47,14 +47,25 @@ func (r *Record) GetLastRecord(ctx context.Context, googleID string) (*models.Re
 	}
 
 	r.setID(keys, records)
-
+	for _, record := range records {
+		record.StartDetail = timeutils.InJST(record.StartDetail)
+		record.EndDetail = timeutils.InJST(record.EndDetail)
+	}
 	return records[0], nil
 }
 
-func (r *Record) List(ctx context.Context, googleID string) (records []*models.Record, err error) {
+func (r *Record) List(ctx context.Context, googleID, start, end string) (records []*models.Record, err error) {
 	q := datastore.NewQuery(r.kind())
-	q = q.Filter("GoogleID =", googleID)
-	q = q.Order("Start")
+	{
+		q = q.Filter("GoogleID =", googleID)
+		if start != "" {
+			q = q.Filter("Start =", start)
+		}
+		if end != "" {
+			q = q.Filter("End =", end)
+		}
+		q = q.Order("StartDetail")
+	}
 
 	keys, err := datastoreClient.GetAll(ctx, q, &records)
 	if err != nil {
@@ -65,7 +76,10 @@ func (r *Record) List(ctx context.Context, googleID string) (records []*models.R
 	}
 
 	r.setID(keys, records)
-
+	for _, record := range records {
+		record.StartDetail = timeutils.InJST(record.StartDetail)
+		record.EndDetail = timeutils.InJST(record.EndDetail)
+	}
 	return records, nil
 }
 
@@ -77,6 +91,8 @@ func (r *Record) Upsert(ctx context.Context, record *models.Record) error {
 		}
 		record.ID = id
 	}
+	record.Start = record.StartDetail.Format(timeutils.DefaultFormat)
+	record.End = record.EndDetail.Format(timeutils.DefaultFormat)
 
 	if _, err := datastoreClient.Put(ctx, r.newKey(record.ID), record); err != nil {
 		return fmt.Errorf("failed to put a record: %s", err)

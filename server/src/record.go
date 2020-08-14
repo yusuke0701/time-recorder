@@ -6,12 +6,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/datastore"
 
 	"github.com/yusuke0701/time-recorder/datastore/models"
 	"github.com/yusuke0701/time-recorder/datastore/store"
-	"github.com/yusuke0701/time-recorder/time"
+	timeutils "github.com/yusuke0701/time-recorder/time"
 )
 
 func CreateRecord(w http.ResponseWriter, r *http.Request) {
@@ -38,8 +39,8 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	// main process
 
 	record := &models.Record{
-		GoogleID: googleID,
-		Start:    time.NowInJST(),
+		GoogleID:    googleID,
+		StartDetail: timeutils.NowInJST(),
 	}
 	if err := (&store.Record{}).Upsert(ctx, record); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -101,6 +102,20 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
+	start := r.FormValue("start")
+	if _, err := time.Parse(timeutils.DefaultFormat, start); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+
+	end := r.FormValue("end")
+	if _, err := time.Parse(timeutils.DefaultFormat, end); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 	googleID, err := callGetGoogleIDFunction(ctx, token)
 	if err != nil {
@@ -111,8 +126,11 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 
 	// main process
 
-	records, err := (&store.Record{}).List(ctx, googleID)
-	if err != nil {
+	records, err := (&store.Record{}).List(ctx, googleID, start, end)
+	if err == datastore.ErrNoSuchEntity {
+		w.WriteHeader(http.StatusOK)
+		return
+	} else if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
 		return
@@ -184,7 +202,7 @@ func UpdateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	record.End = time.NowInJST()
+	record.EndDetail = timeutils.NowInJST()
 
 	if err := rStore.Upsert(ctx, record); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

@@ -5,8 +5,10 @@ import (
 )
 
 type Record struct {
-	ID       string    `json:"id" datastore:"-"`
-	GoogleID string    `json:"google_id"`
-	Start    time.Time `json:"start"`
-	End      time.Time `json:"end"`
+	ID          string    `json:"id" datastore:"-"`
+	GoogleID    string    `json:"google_id"`
+	Start       string    `json:"start"`
+	StartDetail time.Time `json:"start_detail"`
+	End         string    `json:"end"`
+	EndDetail   time.Time `json:"end_detail"`
 }
