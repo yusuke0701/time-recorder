@@ -72,7 +72,7 @@ function makeSearchParams(reqObj) {
   }
   Object.keys(reqObj).forEach(key => {
     const property = reqObj[key];
-    if (property === null || property === void 0) {
+    if (property === null || property === undefined) {
       return;
     }
 
