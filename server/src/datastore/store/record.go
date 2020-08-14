@@ -10,7 +10,7 @@ import (
 
 	"github.com/yusuke0701/goutils/manufacture"
 	"github.com/yusuke0701/time-recorder/datastore/models"
-	myTime "github.com/yusuke0701/time-recorder/time"
+	timeutils "github.com/yusuke0701/time-recorder/time"
 )
 
 type Record struct{}
@@ -25,14 +25,15 @@ func (r *Record) Get(ctx context.Context, id string) (*models.Record, error) {
 	}
 
 	record.ID = id
-
+	record.Start = timeutils.InJST(record.Start)
+	record.End = timeutils.InJST(record.End)
 	return record, nil
 }
 
 func (r *Record) GetLastRecord(ctx context.Context, googleID string) (*models.Record, error) {
 	q := datastore.NewQuery(r.kind())
 	q = q.Filter("GoogleID =", googleID)
-	q = q.Filter("End <", myTime.InJST(time.Date(2014, time.December, 31, 12, 13, 24, 0, time.UTC)))
+	q = q.Filter("End <", timeutils.InJST(time.Date(2014, time.December, 31, 12, 13, 24, 0, time.UTC)))
 
 	var records []*models.Record
 	keys, err := datastoreClient.GetAll(ctx, q, &records)
@@ -47,7 +48,10 @@ func (r *Record) GetLastRecord(ctx context.Context, googleID string) (*models.Re
 	}
 
 	r.setID(keys, records)
-
+	for _, record := range records {
+		record.Start = timeutils.InJST(record.Start)
+		record.End = timeutils.InJST(record.End)
+	}
 	return records[0], nil
 }
 
@@ -65,7 +69,10 @@ func (r *Record) List(ctx context.Context, googleID string) (records []*models.R
 	}
 
 	r.setID(keys, records)
-
+	for _, record := range records {
+		record.Start = timeutils.InJST(record.Start)
+		record.End = timeutils.InJST(record.End)
+	}
 	return records, nil
 }
 

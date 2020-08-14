@@ -11,7 +11,7 @@ import (
 
 	"github.com/yusuke0701/time-recorder/datastore/models"
 	"github.com/yusuke0701/time-recorder/datastore/store"
-	"github.com/yusuke0701/time-recorder/time"
+	timeutils "github.com/yusuke0701/time-recorder/time"
 )
 
 func CreateRecord(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +39,7 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 
 	record := &models.Record{
 		GoogleID: googleID,
-		Start:    time.NowInJST(),
+		Start:    timeutils.NowInJST(),
 	}
 	if err := (&store.Record{}).Upsert(ctx, record); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -184,7 +184,7 @@ func UpdateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	record.End = time.NowInJST()
+	record.End = timeutils.NowInJST()
 
 	if err := rStore.Upsert(ctx, record); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
