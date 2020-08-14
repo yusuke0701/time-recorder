@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"cloud.google.com/go/datastore"
 
@@ -33,7 +32,7 @@ func (r *Record) Get(ctx context.Context, id string) (*models.Record, error) {
 func (r *Record) GetLastRecord(ctx context.Context, googleID string) (*models.Record, error) {
 	q := datastore.NewQuery(r.kind())
 	q = q.Filter("GoogleID =", googleID)
-	q = q.Filter("End <", timeutils.InJST(time.Date(2014, time.December, 31, 12, 13, 24, 0, time.UTC)))
+	q = q.Filter("End =", "0001-01-1")
 
 	var records []*models.Record
 	keys, err := datastoreClient.GetAll(ctx, q, &records)
@@ -55,10 +54,18 @@ func (r *Record) GetLastRecord(ctx context.Context, googleID string) (*models.Re
 	return records[0], nil
 }
 
-func (r *Record) List(ctx context.Context, googleID string) (records []*models.Record, err error) {
+func (r *Record) List(ctx context.Context, googleID, start, end string) (records []*models.Record, err error) {
 	q := datastore.NewQuery(r.kind())
-	q = q.Filter("GoogleID =", googleID)
-	q = q.Order("Start")
+	{
+		q = q.Filter("GoogleID =", googleID)
+		if start != "" {
+			q = q.Filter("Start =", start)
+		}
+		if end != "" {
+			q = q.Filter("End =", end)
+		}
+		q = q.Order("StartDetail")
+	}
 
 	keys, err := datastoreClient.GetAll(ctx, q, &records)
 	if err != nil {

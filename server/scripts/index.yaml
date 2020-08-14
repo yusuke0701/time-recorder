@@ -3,8 +3,17 @@ indexes:
     properties:
       - name: GoogleID
       - name: Start
+      - name: StartDetail
 
   - kind: record
     properties:
       - name: GoogleID
       - name: End
+      - name: StartDetail
+
+  - kind: record
+    properties:
+      - name: GoogleID
+      - name: Start
+      - name: End
+      - name: StartDetail
