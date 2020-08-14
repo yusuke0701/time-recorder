@@ -103,17 +103,21 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	start := r.FormValue("start")
-	if _, err := time.Parse(timeutils.DefaultFormat, start); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err.Error())
-		return
+	if start != "" {
+		if _, err := time.Parse(timeutils.DefaultFormat, start); start != "" && err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, err.Error())
+			return
+		}
 	}
 
 	end := r.FormValue("end")
-	if _, err := time.Parse(timeutils.DefaultFormat, end); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err.Error())
-		return
+	if end != "" {
+		if _, err := time.Parse(timeutils.DefaultFormat, end); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, err.Error())
+			return
+		}
 	}
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")

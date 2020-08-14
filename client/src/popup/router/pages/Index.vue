@@ -7,9 +7,7 @@
     <div v-else>
       <b-button @click="end">End</b-button>
     </div>
-    <div class="text-nowrap">
-      <b-link to="/list">一覧へ</b-link>
-    </div>
+    <b-link class="text-nowrap" to="/calendar">日付選択画面へ</b-link>
   </div>
 </template>
 

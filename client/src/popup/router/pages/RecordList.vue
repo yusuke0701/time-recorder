@@ -3,7 +3,7 @@
     <ul>
       <li v-for="record in dateFormatedRecords" :key="record.start">start: {{ record.start }} end: {{ record.end }}</li>
     </ul>
-    <b-link to="/">戻る</b-link>
+    <b-link class="text-nowrap" to="/calendar">日付選択画面へ</b-link>
   </div>
 </template>
 
@@ -31,7 +31,10 @@ export default {
   },
   methods: {
     listRecord() {
-      doListRecord()
+      const param = {
+        start: this.$route.params.selectedDate,
+      };
+      doListRecord(param)
         .then(res => (this.records = res.data))
         .catch(error => {
           if (error.response.status === 401) {

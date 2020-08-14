@@ -1,4 +1,5 @@
 import PageIndex from './pages/Index';
+import PageCalendar from './pages/Calendar';
 import PageRecordList from './pages/RecordList';
 
 export default [
@@ -7,7 +8,11 @@ export default [
     component: PageIndex,
   },
   {
-    path: '/list',
+    path: '/calendar',
+    component: PageCalendar,
+  },
+  {
+    path: '/list/:selectedDate',
     component: PageRecordList,
   },
 ];
