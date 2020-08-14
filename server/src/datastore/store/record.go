@@ -25,8 +25,8 @@ func (r *Record) Get(ctx context.Context, id string) (*models.Record, error) {
 	}
 
 	record.ID = id
-	record.Start = timeutils.InJST(record.Start)
-	record.End = timeutils.InJST(record.End)
+	record.StartDetail = timeutils.InJST(record.StartDetail)
+	record.EndDetail = timeutils.InJST(record.EndDetail)
 	return record, nil
 }
 
@@ -49,8 +49,8 @@ func (r *Record) GetLastRecord(ctx context.Context, googleID string) (*models.Re
 
 	r.setID(keys, records)
 	for _, record := range records {
-		record.Start = timeutils.InJST(record.Start)
-		record.End = timeutils.InJST(record.End)
+		record.StartDetail = timeutils.InJST(record.StartDetail)
+		record.EndDetail = timeutils.InJST(record.EndDetail)
 	}
 	return records[0], nil
 }
@@ -70,8 +70,8 @@ func (r *Record) List(ctx context.Context, googleID string) (records []*models.R
 
 	r.setID(keys, records)
 	for _, record := range records {
-		record.Start = timeutils.InJST(record.Start)
-		record.End = timeutils.InJST(record.End)
+		record.StartDetail = timeutils.InJST(record.StartDetail)
+		record.EndDetail = timeutils.InJST(record.EndDetail)
 	}
 	return records, nil
 }
@@ -84,6 +84,8 @@ func (r *Record) Upsert(ctx context.Context, record *models.Record) error {
 		}
 		record.ID = id
 	}
+	record.Start = record.StartDetail.Format(timeutils.DefaultFormat)
+	record.End = record.EndDetail.Format(timeutils.DefaultFormat)
 
 	if _, err := datastoreClient.Put(ctx, r.newKey(record.ID), record); err != nil {
 		return fmt.Errorf("failed to put a record: %s", err)

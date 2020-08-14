@@ -38,8 +38,8 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	// main process
 
 	record := &models.Record{
-		GoogleID: googleID,
-		Start:    timeutils.NowInJST(),
+		GoogleID:    googleID,
+		StartDetail: timeutils.NowInJST(),
 	}
 	if err := (&store.Record{}).Upsert(ctx, record); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -184,7 +184,7 @@ func UpdateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	record.End = timeutils.NowInJST()
+	record.EndDetail = timeutils.NowInJST()
 
 	if err := rStore.Upsert(ctx, record); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
