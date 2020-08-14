@@ -3,7 +3,7 @@
     <ul>
       <li v-for="record in dateFormatedRecords" :key="record.start">start: {{ record.start }} end: {{ record.end }}</li>
     </ul>
-    <router-link to="/">戻る</router-link>
+    <b-link to="/">戻る</b-link>
   </div>
 </template>
 
