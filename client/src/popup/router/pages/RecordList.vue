@@ -1,11 +1,6 @@
 <template>
-  <b-card class="text-center text-nowrap" :title="$route.params.selectedDate">
-    <ul>
-      <li v-for="record in dateFormatedRecords" :key="record.start">
-        <div class="text-left" v-if="record.end === '0001-01-1'">start: {{ record.start_detail }}</div>
-        <div class="text-left" v-else>start: {{ record.start_detail }} end: {{ record.end_detail }}</div>
-      </li>
-    </ul>
+  <b-card class="text-center text-nowrap" :title="$route.params.selectedDate + '(JST)'">
+    <b-table hover :fields="tableHeaders" :items="tableValues"></b-table>
     <b-link to="/calendar">日付選択画面へ</b-link>
   </b-card>
 </template>
@@ -15,17 +10,21 @@ import { refreshAuthToken } from '../../../service/apiBase';
 import { doListRecord } from '../../../service/recorde';
 export default {
   data() {
-    return { records: [] };
+    return {
+      records: [],
+      tableHeaders: ['start', 'end'],
+    };
   },
   computed: {
-    dateFormatedRecords() {
+    tableValues() {
       if (!this.records.length) {
-        return this.records;
+        return [];
       }
       return this.records.map((value, index, array) => {
-        value.start_detail = this.formatDate(new Date(value.start_detail));
-        value.end_detail = this.formatDate(new Date(value.end_detail));
-        return value;
+        if (value.end === '0001-01-1') {
+          return { start: this.formatDate(new Date(value.start_detail)) };
+        }
+        return { start: this.formatDate(new Date(value.start_detail)), end: this.formatDate(new Date(value.end_detail)) };
       });
     },
   },
@@ -50,7 +49,7 @@ export default {
         });
     },
     formatDate(date) {
-      return ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2) + '(JST)';
+      return ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
     },
   },
 };
