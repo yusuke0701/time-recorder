@@ -1,7 +1,10 @@
 <template>
   <div>
     <ul>
-      <li v-for="record in dateFormatedRecords" :key="record.start">start: {{ record.start }} end: {{ record.end }}</li>
+      <li v-for="record in dateFormatedRecords" :key="record.start">
+        <div v-if="record.end === '0001-01-1'">start: {{ record.start_detail }}</div>
+        <div v-else>start: {{ record.start_detail }} end: {{ record.end_detail }}</div>
+      </li>
     </ul>
     <b-link class="text-nowrap" to="/calendar">日付選択画面へ</b-link>
   </div>
@@ -20,8 +23,8 @@ export default {
         return this.records;
       }
       return this.records.map((value, index, array) => {
-        value.start = this.formatDate(new Date(value.start));
-        value.end = this.formatDate(new Date(value.end));
+        value.start_detail = this.formatDate(new Date(value.start_detail));
+        value.end_detail = this.formatDate(new Date(value.end_detail));
         return value;
       });
     },
