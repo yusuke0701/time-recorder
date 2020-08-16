@@ -1,13 +1,13 @@
 <template>
-  <div>
+  <b-card class="text-center text-nowrap" :title="$route.params.selectedDate">
     <ul>
       <li v-for="record in dateFormatedRecords" :key="record.start">
-        <div v-if="record.end === '0001-01-1'">start: {{ record.start_detail }}</div>
-        <div v-else>start: {{ record.start_detail }} end: {{ record.end_detail }}</div>
+        <div class="text-left" v-if="record.end === '0001-01-1'">start: {{ record.start_detail }}</div>
+        <div class="text-left" v-else>start: {{ record.start_detail }} end: {{ record.end_detail }}</div>
       </li>
     </ul>
-    <b-link class="text-nowrap" to="/calendar">日付選択画面へ</b-link>
-  </div>
+    <b-link to="/calendar">日付選択画面へ</b-link>
+  </b-card>
 </template>
 
 <script>
@@ -50,20 +50,7 @@ export default {
         });
     },
     formatDate(date) {
-      return (
-        date.getFullYear() +
-        '/' +
-        ('0' + (date.getMonth() + 1)).slice(-2) +
-        '/' +
-        ('0' + date.getDate()).slice(-2) +
-        ' ' +
-        ('0' + date.getHours()).slice(-2) +
-        ':' +
-        ('0' + date.getMinutes()).slice(-2) +
-        ':' +
-        ('0' + date.getSeconds()).slice(-2) +
-        '(JST)'
-      );
+      return ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2) + '(JST)';
     },
   },
 };
