@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <b-card>
     <b-form class="form-inline" v-if="startID !== null">
       <b-button pill variant="primary" @click="start" :disabled="startID !== ''">Start</b-button>
       <b-button pill variant="primary" @click="end" :disabled="startID === ''">End</b-button>
     </b-form>
     <b-link class="text-nowrap" to="/calendar">日付選択画面へ</b-link>
-  </div>
+  </b-card>
 </template>
 
 <script>

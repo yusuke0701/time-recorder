@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="text-center">
     <b-calendar v-model="selectedDate" @context="onContext"></b-calendar>
     <b-link class="text-nowrap" to="/">戻る</b-link>
   </div>
