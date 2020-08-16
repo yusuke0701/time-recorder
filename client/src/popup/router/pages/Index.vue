@@ -1,12 +1,9 @@
 <template>
   <div>
-    <div v-if="startID === null"></div>
-    <div v-else-if="startID === ''">
-      <b-button @click="start">Start</b-button>
-    </div>
-    <div v-else>
-      <b-button @click="end">End</b-button>
-    </div>
+    <b-form class="form-inline" v-if="startID !== null">
+      <b-button pill variant="primary" @click="start" :disabled="startID !== ''">Start</b-button>
+      <b-button pill variant="primary" @click="end" :disabled="startID === ''">End</b-button>
+    </b-form>
     <b-link class="text-nowrap" to="/calendar">日付選択画面へ</b-link>
   </div>
 </template>
