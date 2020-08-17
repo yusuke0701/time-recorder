@@ -1,6 +1,7 @@
 <template>
   <b-card>
-    <b-form class="form-inline" v-if="startID !== null">
+    <b-form-select v-model="selectedCategory" :options="category">Please select a category</b-form-select>
+    <b-form inline v-if="startID !== null">
       <b-button pill variant="primary" @click="start" :disabled="startID !== ''">Start</b-button>
       <b-button pill variant="primary" @click="end" :disabled="startID === ''">End</b-button>
     </b-form>
@@ -9,14 +10,22 @@
 </template>
 
 <script>
+import storage from '../../../mixins/storage';
 import { refreshAuthToken } from '../../../service/apiBase';
 import { doCreateRecord, doGetLastRecord, doUpdateRecord } from '../../../service/recorde';
+
 export default {
+  mixins: [storage],
   data() {
-    return { startID: null };
+    return {
+      startID: null,
+      category: [],
+      selectedCategory: '',
+    };
   },
   beforeMount() {
     this.getLastRecord();
+    this.getCategory();
   },
   methods: {
     start() {
@@ -59,6 +68,16 @@ export default {
             alert('エラー: ' + JSON.stringify(error.response));
           }
         });
+    },
+    getCategory() {
+      this.getLocalStorage('category').then(value => {
+        this.category = value;
+        if (value.length) {
+          this.selectedCategory = value[0].value;
+        } else {
+          this.selectedCategory = '';
+        }
+      });
     },
   },
 };

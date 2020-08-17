@@ -12,7 +12,7 @@ export default {
   data() {
     return {
       records: [],
-      tableHeaders: ['start', 'end'],
+      tableHeaders: ['category', 'start', 'end'],
     };
   },
   computed: {
@@ -22,9 +22,13 @@ export default {
       }
       return this.records.map((value, index, array) => {
         if (value.end === '0001-01-1') {
-          return { start: this.formatDate(new Date(value.start_detail)) };
+          return { category: value.category, start: this.formatDate(new Date(value.start_detail)) };
         }
-        return { start: this.formatDate(new Date(value.start_detail)), end: this.formatDate(new Date(value.end_detail)) };
+        return {
+          category: value.category,
+          start: this.formatDate(new Date(value.start_detail)),
+          end: this.formatDate(new Date(value.end_detail)),
+        };
       });
     },
   },
