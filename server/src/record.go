@@ -28,6 +28,13 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
+	category := r.FormValue("category")
+	if category == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "invalid request. category param is required.")
+		return
+	}
+
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 	googleID, err := callGetGoogleIDFunction(ctx, token)
 	if err != nil {
@@ -40,6 +47,7 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 
 	record := &models.Record{
 		GoogleID:    googleID,
+		Category:    category,
 		StartDetail: timeutils.NowInJST(),
 	}
 	if err := (&store.Record{}).Upsert(ctx, record); err != nil {

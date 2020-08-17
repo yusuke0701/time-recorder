@@ -29,7 +29,10 @@ export default {
   },
   methods: {
     start() {
-      doCreateRecord()
+      const param = {
+        category: this.selectedCategory,
+      };
+      doCreateRecord(param)
         .then(res => (this.startID = res.data))
         .catch(error => {
           if (error.response.status === 401) {
