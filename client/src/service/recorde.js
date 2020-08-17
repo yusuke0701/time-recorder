@@ -1,8 +1,9 @@
 import { doGet, doPost, makeSearchParams } from './apiBase';
 export { doCreateRecord, doGetLastRecord, doListRecord, doUpdateRecord };
 
-function doCreateRecord() {
-  return doPost(`/CreateRecord`);
+function doCreateRecord(param) {
+  const searchParam = makeSearchParams(param);
+  return doPost(`/CreateRecord${searchParam}`);
 }
 
 function doGetLastRecord() {

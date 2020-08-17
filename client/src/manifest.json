@@ -1,7 +1,7 @@
 {
   "name": "time-recorder",
   "description": "A Vue.js web extension",
-  "permissions": ["identity"],
+  "permissions": ["identity", "storage"],
   "version": null,
   "manifest_version": 2,
   "icons": {
