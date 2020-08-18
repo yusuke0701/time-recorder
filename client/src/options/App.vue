@@ -3,8 +3,7 @@
     <b-list-group>
       <b-list-group-item v-for="item in category" :key="item.value" class="d-flex justify-content-between align-items-center">
         {{ item.text }}
-        <!-- <b-badge variant="primary" pill>14</b-badge> -->
-        <!-- 削除ボタンと、変更ボタン -->
+        <b-button @click="deleteCategory(item.value)">削除</b-button>
       </b-list-group-item>
     </b-list-group>
     <b-form inline>
@@ -36,10 +35,22 @@ export default {
       });
     },
     addCategory() {
-      // TODO: category name が同じものが入ってないかチェックする
-      this.category.push({ value: this.newCategoryName, text: this.newCategoryName });
+      // index.vue の表示の仕方に合わせて保存しているが、正直、微妙
+      // ただ、name だけにすると、配列表示が微妙になる。key の指定的なあれで
+      const newCategory = { value: this.newCategoryName, text: this.newCategoryName };
       this.newCategoryName = '';
 
+      if (this.category.filter(v => v.value === newCategory.value).length) {
+        return;
+      }
+      this.category.push(newCategory);
+      this.saveCategory();
+    },
+    deleteCategory(value) {
+      this.category = this.category.filter(v => v.value !== value);
+      this.saveCategory();
+    },
+    saveCategory() {
       // TODO: 他のプロパティが存在した場合、どうなるのか？
       const tmp = {
         category: this.category,
