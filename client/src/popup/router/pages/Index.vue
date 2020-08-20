@@ -12,7 +12,7 @@
 <script>
 import storage from '../../../mixins/storage';
 import { refreshAuthToken } from '../../../service/apiBase';
-import { doCreateRecord, doGetLastRecord, doUpdateRecord } from '../../../service/recorde';
+import { doCreateRecord, doGetLastRecord, doUpdateRecord } from '../../../service/record';
 
 export default {
   mixins: [storage],

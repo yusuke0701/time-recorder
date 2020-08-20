@@ -1,6 +1,7 @@
 package funcs
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,25 +16,24 @@ import (
 	timeutils "github.com/yusuke0701/time-recorder/time"
 )
 
-func CreateRecord(w http.ResponseWriter, r *http.Request) {
+// Records は、RecordAPIの関数です。
+func Records(w http.ResponseWriter, r *http.Request) {
 	// pre process
 
 	ctx := r.Context()
 
 	// Set CORS headers for the preflight request
 	if r.Method == http.MethodOptions {
-		setHeaderForCORS(w)
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Max-Age", "3600")
+		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	category := r.FormValue("category")
-	if category == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "invalid request. category param is required.")
-		return
-	}
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 	googleID, err := callGetGoogleIDFunction(ctx, token)
@@ -44,6 +44,35 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// main process
+
+	switch r.Method {
+	case http.MethodPost:
+		createRecord(ctx, w, r, googleID)
+	case http.MethodGet:
+		last := r.FormValue("last")
+		if last != "" {
+			getLastRecord(ctx, w, r, googleID)
+		} else {
+			listRecord(ctx, w, r, googleID)
+		}
+	case http.MethodPut:
+		updateRecord(ctx, w, r, googleID)
+	case http.MethodDelete:
+		// TODO:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+	return
+}
+
+func createRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
+	category := r.FormValue("category")
+	if category == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "invalid request. category param is required.")
+		return
+	}
 
 	record := &models.Record{
 		GoogleID:    googleID,
@@ -60,29 +89,7 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, record.ID)
 }
 
-func GetLastRecord(w http.ResponseWriter, r *http.Request) {
-	// pre process
-
-	ctx := r.Context()
-
-	// Set CORS headers for the preflight request
-	if r.Method == http.MethodOptions {
-		setHeaderForCORS(w)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := callGetGoogleIDFunction(ctx, token)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err.Error())
-		return
-	}
-
-	// main process
-
+func getLastRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
 	record, err := (&store.Record{}).GetLastRecord(ctx, googleID)
 	if err == datastore.ErrNoSuchEntity {
 		w.WriteHeader(http.StatusNotFound)
@@ -97,22 +104,10 @@ func GetLastRecord(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, record.ID)
 }
 
-func ListRecord(w http.ResponseWriter, r *http.Request) {
-	// pre process
-
-	ctx := r.Context()
-
-	// Set CORS headers for the preflight request
-	if r.Method == http.MethodOptions {
-		setHeaderForCORS(w)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
+func listRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
 	start := r.FormValue("start")
 	if start != "" {
-		if _, err := time.Parse(timeutils.DefaultFormat, start); start != "" && err != nil {
+		if _, err := time.Parse(timeutils.DefaultFormat, start); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprint(w, err.Error())
 			return
@@ -127,16 +122,6 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
-	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := callGetGoogleIDFunction(ctx, token)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err.Error())
-		return
-	}
-
-	// main process
 
 	records, err := (&store.Record{}).List(ctx, googleID, start, end)
 	if err == datastore.ErrNoSuchEntity {
@@ -159,47 +144,26 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(recordsBytes))
 }
 
-func UpdateRecord(w http.ResponseWriter, r *http.Request) {
-	// pre process
+func updateRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
+	var recordID string
+	{
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintln(w, err.Error())
+			return
+		}
+		defer r.Body.Close()
 
-	ctx := r.Context()
-
-	// Set CORS headers for the preflight request
-	if r.Method == http.MethodOptions {
-		setHeaderForCORS(w)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, err.Error())
-		return
-	}
-	defer r.Body.Close()
-	id := string(body)
-
-	if id == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, "Set id in body.")
-		return
+		recordID = string(body)
+		if recordID == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintln(w, "Set record id at body.")
+			return
+		}
 	}
 
-	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := callGetGoogleIDFunction(ctx, token)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err.Error())
-		return
-	}
-
-	// main process
-
-	var rStore *store.Record
-
-	record, err := rStore.Get(ctx, id)
+	record, err := (&store.Record{}).Get(ctx, recordID)
 	if err == datastore.ErrNoSuchEntity {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -216,12 +180,11 @@ func UpdateRecord(w http.ResponseWriter, r *http.Request) {
 
 	record.EndDetail = timeutils.NowInJST()
 
-	if err := rStore.Upsert(ctx, record); err != nil {
+	if err := (&store.Record{}).Upsert(ctx, record); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintln(w, err.Error())
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "ok")
 }

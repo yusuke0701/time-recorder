@@ -27,10 +27,7 @@ for func in "${functions[@]}"; do
 done
 
 allowUnauthenticatedFunctions=(
-    "CreateRecord"
-    "GetLastRecord"
-    "ListRecord"
-    "UpdateRecord"
+    "Records"
 )
 
 for func in "${allowUnauthenticatedFunctions[@]}"; do
