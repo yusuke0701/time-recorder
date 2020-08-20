@@ -1,9 +1,11 @@
-import { doGet, doPost, makeSearchParams } from './apiBase';
+import { doGet, doPost, doPut, makeSearchParams } from './apiBase';
 export { doCreateRecord, doGetLastRecord, doListRecord, doUpdateRecord };
+
+const recordAPIPath = '/Records';
 
 function doCreateRecord(param) {
   const searchParam = makeSearchParams(param);
-  return doPost(`/CreateRecord${searchParam}`);
+  return doPost(`${recordAPIPath}${searchParam}`);
 }
 
 function doGetLastRecord() {
@@ -16,5 +18,5 @@ function doListRecord(param) {
 }
 
 function doUpdateRecord(payload) {
-  return doPost(`/UpdateRecord`, payload);
+  return doPut(recordAPIPath, payload);
 }

@@ -7,7 +7,7 @@
 
 <script>
 import { refreshAuthToken } from '../../../service/apiBase';
-import { doListRecord } from '../../../service/recorde';
+import { doListRecord } from '../../../service/record';
 export default {
   data() {
     return {
