@@ -28,8 +28,6 @@ done
 
 allowUnauthenticatedFunctions=(
     "Records"
-    "GetLastRecord"
-    "ListRecord"
 )
 
 for func in "${allowUnauthenticatedFunctions[@]}"; do

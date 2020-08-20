@@ -5,16 +5,17 @@ const recordAPIPath = '/Records';
 
 function doCreateRecord(param) {
   const searchParam = makeSearchParams(param);
-  return doPost(`${recordAPIPath}${searchParam}`);
+  return doPost(recordAPIPath + searchParam);
 }
 
 function doGetLastRecord() {
-  return doGet(`/GetLastRecord`);
+  const searchParam = makeSearchParams({ last: true });
+  return doGet(recordAPIPath + searchParam);
 }
 
 function doListRecord(param) {
   const searchParam = makeSearchParams(param);
-  return doGet(`/ListRecord${searchParam}`);
+  return doGet(recordAPIPath + searchParam);
 }
 
 function doUpdateRecord(payload) {

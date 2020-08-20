@@ -11,15 +11,6 @@ import (
 	"google.golang.org/api/idtoken"
 )
 
-func setHeaderForCORS(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Max-Age", "3600")
-	w.WriteHeader(http.StatusNoContent)
-}
-
 // callFunction は、別のGCF関数を呼び出す関数
 // functionURL = "https://REGION-PROJECT.cloudfunctions.net/RECEIVING_FUNCTION"
 func callFunction(ctx context.Context, method, functionURL string, headers map[string]string) (string, error) {

@@ -49,8 +49,12 @@ func Records(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		createRecord(ctx, w, r, googleID)
 	case http.MethodGet:
-		// TODO:
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		last := r.FormValue("last")
+		if last != "" {
+			getLastRecord(ctx, w, r, googleID)
+		} else {
+			listRecord(ctx, w, r, googleID)
+		}
 	case http.MethodPut:
 		updateRecord(ctx, w, r, googleID)
 	case http.MethodDelete:
@@ -85,29 +89,7 @@ func createRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, g
 	fmt.Fprint(w, record.ID)
 }
 
-func GetLastRecord(w http.ResponseWriter, r *http.Request) {
-	// pre process
-
-	ctx := r.Context()
-
-	// Set CORS headers for the preflight request
-	if r.Method == http.MethodOptions {
-		setHeaderForCORS(w)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := callGetGoogleIDFunction(ctx, token)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err.Error())
-		return
-	}
-
-	// main process
-
+func getLastRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
 	record, err := (&store.Record{}).GetLastRecord(ctx, googleID)
 	if err == datastore.ErrNoSuchEntity {
 		w.WriteHeader(http.StatusNotFound)
@@ -122,22 +104,10 @@ func GetLastRecord(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, record.ID)
 }
 
-func ListRecord(w http.ResponseWriter, r *http.Request) {
-	// pre process
-
-	ctx := r.Context()
-
-	// Set CORS headers for the preflight request
-	if r.Method == http.MethodOptions {
-		setHeaderForCORS(w)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
+func listRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
 	start := r.FormValue("start")
 	if start != "" {
-		if _, err := time.Parse(timeutils.DefaultFormat, start); start != "" && err != nil {
+		if _, err := time.Parse(timeutils.DefaultFormat, start); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprint(w, err.Error())
 			return
@@ -152,16 +122,6 @@ func ListRecord(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
-	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := callGetGoogleIDFunction(ctx, token)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err.Error())
-		return
-	}
-
-	// main process
 
 	records, err := (&store.Record{}).List(ctx, googleID, start, end)
 	if err == datastore.ErrNoSuchEntity {
