@@ -2,6 +2,7 @@ package funcs
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -21,15 +22,15 @@ func setHeaderForCORS(w http.ResponseWriter) {
 
 // callFunction は、別のGCF関数を呼び出す関数
 // functionURL = "https://REGION-PROJECT.cloudfunctions.net/RECEIVING_FUNCTION"
-func callFunction(ctx context.Context, method, functionURL string, headers map[string]string) ([]byte, error) {
+func callFunction(ctx context.Context, method, functionURL string, headers map[string]string) (string, error) {
 	client, err := idtoken.NewClient(ctx, functionURL)
 	if err != nil {
-		return nil, fmt.Errorf("idtoken.NewClient: %v", err)
+		return "", fmt.Errorf("idtoken.NewClient: %v", err)
 	}
 
 	req, err := http.NewRequest(method, functionURL, nil)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	for k, v := range headers {
 		req.Header.Add(k, v)
@@ -37,11 +38,20 @@ func callFunction(ctx context.Context, method, functionURL string, headers map[s
 
 	res, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("client.Get: %v", err)
+		return "", fmt.Errorf("client.Get: %v", err)
 	}
 	defer res.Body.Close()
 
-	return ioutil.ReadAll(res.Body)
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+
+	if res.StatusCode >= 400 {
+		return "", errors.New(string(b))
+	}
+
+	return string(b), nil
 }
 
 // callGetGoogleIDFunction は、GetGoogleID関数を呼び出す
