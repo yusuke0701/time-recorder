@@ -1,6 +1,6 @@
 <template>
   <b-card>
-    <b-form-select v-model="selectedCategory" :options="category">Please select a category</b-form-select>
+    <b-form-select v-model="selectedCategory" :disabled="startID !== ''" :options="category">Please select a category</b-form-select>
     <b-form inline v-if="startID !== null">
       <b-button pill variant="primary" @click="start" :disabled="startID !== ''">Start</b-button>
       <b-button pill variant="primary" @click="end" :disabled="startID === ''">End</b-button>
@@ -33,7 +33,7 @@ export default {
         category: this.selectedCategory,
       };
       doCreateRecord(param)
-        .then(res => (this.startID = res.data))
+        .then(res => (this.startID = res.data.id))
         .catch(error => {
           if (error.response.status === 401) {
             refreshAuthToken().then(() => {
@@ -46,7 +46,10 @@ export default {
     },
     getLastRecord() {
       doGetLastRecord()
-        .then(res => (this.startID = res.data))
+        .then(res => {
+          this.startID = res.data.id;
+          this.selectedCategory = res.data.category;
+        })
         .catch(error => {
           if (error.response.status === 401) {
             refreshAuthToken().then(() => {

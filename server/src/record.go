@@ -86,7 +86,13 @@ func createRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, g
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, record.ID)
+	b, err := json.Marshal(record)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+	fmt.Fprint(w, string(b))
 }
 
 func getLastRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
@@ -101,7 +107,13 @@ func getLastRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, 
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, record.ID)
+	b, err := json.Marshal(record)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+	fmt.Fprint(w, string(b))
 }
 
 func listRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
@@ -133,15 +145,14 @@ func listRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, goo
 		return
 	}
 
-	recordsBytes, err := json.Marshal(records)
+	w.WriteHeader(http.StatusOK)
+	b, err := json.Marshal(records)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, string(recordsBytes))
+	fmt.Fprint(w, string(b))
 }
 
 func updateRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
@@ -187,4 +198,11 @@ func updateRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, g
 	}
 
 	w.WriteHeader(http.StatusOK)
+	b, err := json.Marshal(record)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+	fmt.Fprint(w, string(b))
 }
