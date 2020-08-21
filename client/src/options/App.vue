@@ -6,10 +6,9 @@
         <b-button @click="deleteCategory(item.value)">削除</b-button>
       </b-list-group-item>
     </b-list-group>
-    <b-form inline>
-      <b-form-input v-model="newCategoryName" placeholder="Enter category name"></b-form-input>
-      <b-button :disabled="newCategoryName === ''" block @click="addCategory">カテゴリの追加</b-button>
-    </b-form>
+    <b-form-input v-model="newCategoryName" placeholder="Enter category name"></b-form-input>
+    <b-button :disabled="newCategoryName === ''" block @click="addCategory">カテゴリの追加</b-button>
+    <b-button block @click="clearCategory">カテゴリの初期化</b-button>
   </div>
 </template>
 
@@ -52,12 +51,28 @@ export default {
     },
     saveCategory() {
       // TODO: 他のプロパティが存在した場合、どうなるのか？
+      if (!this.category) {
+        this.category = this.getDefaultCategory();
+      }
       const tmp = {
         category: this.category,
       };
       this.setLocalStorage(tmp).then(value => {
         this.setResult = value;
       });
+    },
+    clearCategory() {
+      this.category = this.getDefaultCategory();
+      this.saveCategory();
+    },
+    getDefaultCategory() {
+      return [
+        { text: 'work', value: 'work' },
+        { text: 'study', value: 'study' },
+        { text: 'game', value: 'game' },
+        { text: 'anime', value: 'anime' },
+        { text: 'movie', value: 'movie' },
+      ];
     },
   },
 };

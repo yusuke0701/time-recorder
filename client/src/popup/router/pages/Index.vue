@@ -5,7 +5,7 @@
       <b-button pill variant="primary" @click="start" :disabled="startID !== ''">Start</b-button>
       <b-button pill variant="primary" @click="end" :disabled="startID === ''">End</b-button>
     </b-form>
-    <b-link class="text-nowrap" to="/calendar">日付選択画面へ</b-link>
+    <b-link class="text-nowrap" to="/calendar">過去の記録を見る</b-link>
   </b-card>
 </template>
 

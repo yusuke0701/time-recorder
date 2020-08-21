@@ -1,7 +1,7 @@
 <template>
   <b-card class="text-center text-nowrap" :title="$route.params.selectedDate + '(JST)'">
     <b-table hover :fields="tableHeaders" :items="tableValues"></b-table>
-    <b-link to="/calendar">日付選択画面へ</b-link>
+    <b-link to="/calendar">戻る</b-link>
   </b-card>
 </template>
 
