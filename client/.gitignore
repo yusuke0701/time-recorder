@@ -2,3 +2,5 @@
 /*.log
 /dist
 /dist-zip
+dist.crx
+dist.pem

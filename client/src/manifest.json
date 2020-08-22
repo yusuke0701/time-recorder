@@ -1,6 +1,6 @@
 {
   "name": "time-recorder",
-  "description": "A Vue.js web extension",
+  "description": "時間を記録するツールです。",
   "permissions": ["identity", "storage"],
   "version": null,
   "manifest_version": 2,
