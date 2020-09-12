@@ -11,6 +11,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 
+	"github.com/yusuke0701/goutils/gcp"
 	"github.com/yusuke0701/time-recorder/datastore/models"
 	"github.com/yusuke0701/time-recorder/datastore/store"
 	timeutils "github.com/yusuke0701/time-recorder/time"
@@ -35,12 +36,20 @@ func Records(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := callGetGoogleIDFunction(ctx, token)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err.Error())
-		return
+	var googleID string
+	{
+		if gcp.OnGCP() {
+			token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+			gID, err := callGetGoogleIDFunction(ctx, token)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, err.Error())
+				return
+			}
+			googleID = gID
+		} else {
+			googleID = "test-user"
+		}
 	}
 
 	// main process

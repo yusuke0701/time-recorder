@@ -8,10 +8,8 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/CreateRecord", funcs.CreateRecord)
-	http.HandleFunc("/GetLastRecord", funcs.GetLastRecord)
-	http.HandleFunc("/ListRecord", funcs.ListRecord)
-	http.HandleFunc("/UpdateRecord", funcs.UpdateRecord)
+	http.HandleFunc("/Records", funcs.Records)
+	// http.HandleFunc("/GetGoogleID", funcs.GetGoogleID)
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
