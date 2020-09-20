@@ -1,18 +1,103 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  <b-card>
+    <b-form-select
+      v-model="selectedCategory"
+      :disabled="startID !== ''"
+      :options="category"
+      >Please select a category</b-form-select
+    >
+    <b-form inline v-if="startID !== null">
+      <b-button pill variant="primary" @click="start" :disabled="startID !== ''"
+        >Start</b-button
+      >
+      <b-button pill variant="primary" @click="end" :disabled="startID === ''"
+        >End</b-button
+      >
+    </b-form>
+    <b-link class="text-nowrap" to="/calendar">過去の記録を見る</b-link>
+  </b-card>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import {
+  doCreateRecord,
+  doGetLastRecord,
+  doUpdateRecord
+} from "../services/record";
 
 export default {
-  name: "Home",
-  components: {
-    HelloWorld
+  data() {
+    return {
+      startID: null,
+      // category をストレージに保存する
+      category: [
+        { text: "work", value: "work" },
+        { text: "study", value: "study" },
+        { text: "game", value: "game" },
+        { text: "anime", value: "anime" },
+        { text: "movie", value: "movie" }
+      ],
+      selectedCategory: ""
+    };
+  },
+  beforeMount() {
+    this.getLastRecord();
+    this.getCategory();
+  },
+  methods: {
+    start() {
+      const param = {
+        category: this.selectedCategory
+      };
+      doCreateRecord(param)
+        .then(res => (this.startID = res.data.id))
+        .catch(error => {
+          if (error.response.status === 401) {
+            this.start();
+          } else {
+            alert("エラー: " + JSON.stringify(error.response));
+          }
+        });
+    },
+    getLastRecord() {
+      doGetLastRecord()
+        .then(res => {
+          this.startID = res.data.id;
+          this.selectedCategory = res.data.category;
+        })
+        .catch(error => {
+          if (error.response.status === 401) {
+            this.getLastRecord();
+          } else if (error.response.status === 404) {
+            this.startID = "";
+          } else {
+            alert("エラー: " + JSON.stringify(error.response));
+          }
+        });
+    },
+    end() {
+      doUpdateRecord(this.startID)
+        .then(() => (this.startID = ""))
+        .catch(error => {
+          if (error.response.status === 401) {
+            this.end();
+          } else {
+            alert("エラー: " + JSON.stringify(error.response));
+          }
+        });
+    },
+    getCategory() {
+      this.getLocalStorage("category").then(value => {
+        this.category = value;
+        if (value.length) {
+          this.selectedCategory = value[0].value;
+        } else {
+          this.selectedCategory = "";
+        }
+      });
+    }
   }
 };
 </script>
+
+<style lang="scss" scoped></style>
