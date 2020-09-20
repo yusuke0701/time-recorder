@@ -43,6 +43,10 @@ jobs:
           name: build
           command: npm run build
           working_directory: client
+      - persist_to_workspace:
+          root: client/dist
+          paths:
+            - .
 
   lint-server:
     executor: go-executor
@@ -75,7 +79,24 @@ jobs:
           command: golangci-lint run --disable-all --enable=goimports --enable=golint --enable=govet --enable=errcheck --enable=staticcheck ./...
           working_directory: << parameters.working_dir >>
 
-  deploy:
+  deploy-client:
+    executor: node-executor
+    parameters:
+      working_dir:
+        type: string
+    steps:
+      - checkout
+      - attach_workspace:
+          at: client/dist
+      - run:
+          name: Install Firebase Cli
+          command: sudo npm i -g firebase-tools
+      - run:
+          name: deploy
+          command: firebase deploy --token=$FIREBASE_TOKEN
+          working_directory: << parameters.working_dir >>
+
+  deploy-server:
     executor: gcloud-executor
     parameters:
       working_dir:
@@ -99,7 +120,16 @@ workflows:
           working_dir: server/src
           cache_key: go-mod-{{ .Environment.CACHE_KEY }}-{{ checksum "server/src/go.mod" }}
           cache_version: go-mod-{{ .Environment.CACHE_KEY }}
-      - deploy:
+      - deploy-client:
+          context: firebase
+          working_dir: client
+          requires:
+            - lint-client
+            - lint-server
+          filters:
+            branches:
+              only: master
+      - deploy-server:
           context: gcp
           working_dir: server
           requires:
