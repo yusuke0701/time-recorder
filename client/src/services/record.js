@@ -1,7 +1,7 @@
-import { doGet, doPost, doPut, makeSearchParams } from './apiBase';
+import { doGet, doPost, doPut, makeSearchParams } from "./apiBase";
 export { doCreateRecord, doGetLastRecord, doListRecord, doUpdateRecord };
 
-const recordAPIPath = '/Records';
+const recordAPIPath = "/Records";
 
 function doCreateRecord(param) {
   const searchParam = makeSearchParams(param);

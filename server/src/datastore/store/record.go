@@ -29,9 +29,9 @@ func (r *Record) Get(ctx context.Context, id string) (*models.Record, error) {
 	return record, nil
 }
 
-func (r *Record) GetLastRecord(ctx context.Context, googleID string) (*models.Record, error) {
+func (r *Record) GetLastRecord(ctx context.Context, userID string) (*models.Record, error) {
 	q := datastore.NewQuery(r.kind())
-	q = q.Filter("GoogleID =", googleID)
+	q = q.Filter("UserID =", userID)
 	q = q.Filter("End =", "0001-01-1")
 
 	var records []*models.Record
@@ -54,10 +54,10 @@ func (r *Record) GetLastRecord(ctx context.Context, googleID string) (*models.Re
 	return records[0], nil
 }
 
-func (r *Record) List(ctx context.Context, googleID, start, end string) (records []*models.Record, err error) {
+func (r *Record) List(ctx context.Context, userID, start, end string) (records []*models.Record, err error) {
 	q := datastore.NewQuery(r.kind())
 	{
-		q = q.Filter("GoogleID =", googleID)
+		q = q.Filter("UserID =", userID)
 		if start != "" {
 			q = q.Filter("Start =", start)
 		}

@@ -36,7 +36,7 @@ func Records(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := callGetGoogleIDFunction(ctx, token)
+	userID, err := callVerifyIDTokenFunction(ctx, token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -47,16 +47,16 @@ func Records(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodPost:
-		createRecord(ctx, w, r, googleID)
+		createRecord(ctx, w, r, userID)
 	case http.MethodGet:
 		last := r.FormValue("last")
 		if last != "" {
-			getLastRecord(ctx, w, r, googleID)
+			getLastRecord(ctx, w, r, userID)
 		} else {
-			listRecord(ctx, w, r, googleID)
+			listRecord(ctx, w, r, userID)
 		}
 	case http.MethodPut:
-		updateRecord(ctx, w, r, googleID)
+		updateRecord(ctx, w, r, userID)
 	case http.MethodDelete:
 		// TODO:
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -66,7 +66,7 @@ func Records(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func createRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
+func createRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, userID string) {
 	category := r.FormValue("category")
 	if category == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -75,7 +75,7 @@ func createRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, g
 	}
 
 	record := &models.Record{
-		GoogleID:    googleID,
+		UserID:      userID,
 		Category:    category,
 		StartDetail: timeutils.NowInJST(),
 	}
@@ -95,8 +95,8 @@ func createRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, g
 	fmt.Fprint(w, string(b))
 }
 
-func getLastRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
-	record, err := (&store.Record{}).GetLastRecord(ctx, googleID)
+func getLastRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, userID string) {
+	record, err := (&store.Record{}).GetLastRecord(ctx, userID)
 	if err == datastore.ErrNoSuchEntity {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -116,7 +116,7 @@ func getLastRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, 
 	fmt.Fprint(w, string(b))
 }
 
-func listRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
+func listRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, userID string) {
 	start := r.FormValue("start")
 	if start != "" {
 		if _, err := time.Parse(timeutils.DefaultFormat, start); err != nil {
@@ -135,7 +135,7 @@ func listRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, goo
 		}
 	}
 
-	records, err := (&store.Record{}).List(ctx, googleID, start, end)
+	records, err := (&store.Record{}).List(ctx, userID, start, end)
 	if err == datastore.ErrNoSuchEntity {
 		w.WriteHeader(http.StatusOK)
 		return
@@ -155,7 +155,7 @@ func listRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, goo
 	fmt.Fprint(w, string(b))
 }
 
-func updateRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, googleID string) {
+func updateRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, userID string) {
 	var recordID string
 	{
 		body, err := ioutil.ReadAll(r.Body)
@@ -184,7 +184,7 @@ func updateRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, g
 		return
 	}
 
-	if record.GoogleID != googleID {
+	if record.UserID != userID {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}

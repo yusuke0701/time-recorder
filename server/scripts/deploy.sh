@@ -14,7 +14,7 @@ gcloud datastore indexes create index.yaml --project=$projectID --quiet
 cd ../src
 
 functions=(
-    "GetGoogleID"
+    "VerifyIDToken"
 )
 
 for func in "${functions[@]}"; do

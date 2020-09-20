@@ -9,8 +9,8 @@
 ## 主な構成
 
 - クライアント
-  - Chrome 拡張ツール
-  - Vue.js(https://github.com/Kocal/vue-web-extension)
+  - Firebase Hosting
+  - Vue 2
 - サーバー
   - Google Cloud Functions
   - Golang
@@ -18,19 +18,15 @@
   - Google Cloud Datastore
 
 ## 動作確認方法
+下記URLにて動作確認可能
+https://hoge-hoge-123456789.web.app
 
-1. クライアント側のビルド
+以下の方法で、ユーザー登録できる
 
-```
-cd client
-npm install
-npm run build:dev
-```
+1. https://hoge-hoge-123456789.web.app/signup へアクセス
+1. 登録画面へ繋がるので、メールアドレスとパスワードを入力する
 
-上記手順で client/dist フォルダができる。
+以下の方法で、ログインできる
 
-2. ブラウザで `chrome://extentions` を開き、client/dist フォルダを読み込ませる。
-
-詳細な手順は以下のサイトが参考になる。
-
-https://toranoana-lab.hatenablog.com/entry/2020/04/23/174421
+1. https://hoge-hoge-123456789.web.app/signin へアクセス
+1. ログイン画面へ繋がるので、メールアドレスとパスワードを入力する

@@ -45,9 +45,9 @@ func callFunction(ctx context.Context, method, functionURL string, headers map[s
 	return string(b), nil
 }
 
-// callGetGoogleIDFunction は、GetGoogleID関数を呼び出す
-func callGetGoogleIDFunction(ctx context.Context, tokenFromUser string) (string, error) {
-	u := fmt.Sprintf("https://us-central1-%s.cloudfunctions.net/GetGoogleID", os.Getenv("GOOGLE_CLOUD_PROJECT"))
+// callVerifyIDTokenFunction は、VerifyIDToken関数を呼び出す
+func callVerifyIDTokenFunction(ctx context.Context, tokenFromUser string) (string, error) {
+	u := fmt.Sprintf("https://us-central1-%s.cloudfunctions.net/VerifyIDToken", os.Getenv("GOOGLE_CLOUD_PROJECT"))
 	h := map[string]string{"AuthorizationFromUser": tokenFromUser}
 
 	b, err := callFunction(ctx, http.MethodGet, u, h)

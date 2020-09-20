@@ -9,17 +9,17 @@
 export default {
   data() {
     return {
-      selectedDate: '',
-      context: null,
+      selectedDate: "",
+      context: null
     };
   },
   methods: {
     onContext(ctx) {
       this.context = ctx;
-      if (this.selectedDate !== '') {
+      if (this.selectedDate !== "") {
         this.$router.push(`/list/${this.selectedDate}`);
       }
-    },
-  },
+    }
+  }
 };
 </script>

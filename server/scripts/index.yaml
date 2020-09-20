@@ -1,19 +1,19 @@
 indexes:
   - kind: record
     properties:
-      - name: GoogleID
+      - name: UserID
       - name: Start
       - name: StartDetail
 
   - kind: record
     properties:
-      - name: GoogleID
+      - name: UserID
       - name: End
       - name: StartDetail
 
   - kind: record
     properties:
-      - name: GoogleID
+      - name: UserID
       - name: Start
       - name: End
       - name: StartDetail
