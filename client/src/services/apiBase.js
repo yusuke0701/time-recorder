@@ -1,26 +1,74 @@
 import axios from "axios";
-import env from "env";
+import firebase from "firebase";
 
 export { doGet, doPost, doPut, doDelete, makeSearchParams };
 
 const axiosInstance = axios.create({
-  baseURL: env.apiBaseURL
+  baseURL: process.env.VUE_APP_API_ORIGIN
 });
 
 function doGet(url) {
-  return axiosInstance.get(url);
+  return firebase
+    .auth()
+    .currentUser.getIdToken(true)
+    .then(token => {
+      return axiosInstance.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    })
+    .catch(e => {
+      alert(e);
+    });
 }
 
 function doPost(url, data) {
-  return axiosInstance.post(url, data);
+  return firebase
+    .auth()
+    .currentUser.getIdToken(true)
+    .then(token => {
+      return axiosInstance.post(url, data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    })
+    .catch(e => {
+      alert(e);
+    });
 }
 
 function doPut(url, data) {
-  return axiosInstance.put(url, data);
+  return firebase
+    .auth()
+    .currentUser.getIdToken(true)
+    .then(token => {
+      return axiosInstance.put(url, data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    })
+    .catch(e => {
+      alert(e);
+    });
 }
 
 function doDelete(url) {
-  return axiosInstance.delete(url);
+  return firebase
+    .auth()
+    .currentUser.getIdToken(true)
+    .then(token => {
+      return axiosInstance.delete(url, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    })
+    .catch(e => {
+      alert(e);
+    });
 }
 
 function makeSearchParams(reqObj) {
