@@ -36,7 +36,9 @@ func Records(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	googleID, err := callGetGoogleIDFunction(ctx, token)
+
+	// TODO: googleID を uid にリネームする
+	googleID, err := callVerifyIDTokenFunction(ctx, token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
