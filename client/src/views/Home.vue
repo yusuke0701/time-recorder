@@ -1,5 +1,6 @@
 <template>
   <b-card>
+    <!-- TODO: サインアウトの機能 -->
     <b-form-select
       v-model="selectedCategory"
       :disabled="startID !== ''"

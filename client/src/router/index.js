@@ -10,6 +10,10 @@ Vue.use(VueRouter);
 
 const routes = [
   {
+    path: '*',
+    redirect: 'signin'
+  },
+  {
     path: "/",
     component: Home
   },
@@ -36,5 +40,24 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 });
+
+router.beforeEach((to, from, next) => {
+  let requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  let currentUser = firebase.auth().currentUser
+  if (requiresAuth) {
+    // このルートはログインされているかどうか認証が必要です。
+    // もしされていないならば、ログインページにリダイレクトします。
+    if (!currentUser) {
+      next({
+        path: '/signin',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next() // next() を常に呼び出すようにしてください!
+  }
+})
 
 export default router;
