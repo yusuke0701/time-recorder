@@ -1,7 +1,7 @@
 <template>
   <div class="signup">
     <h2>Sign up</h2>
-    <input type="text" placeholder="Username" v-model="username" />
+    <input type="email" placeholder="EmailAddress" v-model="emailAddress" />
     <input type="password" placeholder="Password" v-model="password" />
     <button @click="signUp">Register</button>
     <p>
@@ -18,7 +18,7 @@ export default {
   name: "Signup",
   data() {
     return {
-      username: "",
+      emailAddress: "",
       password: ""
     };
   },
@@ -26,7 +26,7 @@ export default {
     signUp: function() {
       firebase
         .auth()
-        .createUserWithEmailAndPassword(this.username, this.password)
+        .createUserWithEmailAndPassword(this.emailAddress, this.password)
         .then(user => {
           alert("Create account: ", user.email);
         })
