@@ -29,7 +29,7 @@ import {
 export default {
   data() {
     return {
-      startID: null,
+      startID: "",
       // category をストレージに保存する
       category: [
         { text: "work", value: "work" },
@@ -43,7 +43,7 @@ export default {
   },
   beforeMount() {
     this.getLastRecord();
-    this.getCategory();
+    // this.getCategory();
   },
   methods: {
     start() {

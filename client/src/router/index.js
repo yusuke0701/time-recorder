@@ -16,7 +16,7 @@ const routes = [
     redirect: "signin"
   },
   {
-    path: "/",
+    path: "/home",
     component: Home
   },
   {

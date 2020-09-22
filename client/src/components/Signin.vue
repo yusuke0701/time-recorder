@@ -30,7 +30,7 @@ export default {
         .then(
           () => {
             alert("Success!");
-            this.$router.push("/");
+            this.$router.push("/home");
           },
           err => {
             alert(err.message);
